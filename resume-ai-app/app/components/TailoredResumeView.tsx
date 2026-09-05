@@ -183,7 +183,13 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeData: resume }),
+        body: JSON.stringify({
+          resumeData: {
+            ...resume,
+            openSourceProjects: openSourceList.length > 0 ? openSourceList : resume.openSourceProjects,
+            projects: standardProjectList.length > 0 ? standardProjectList : resume.projects,
+          },
+        }),
       });
       if (!res.ok) throw new Error('Export failed');
       const blob = await res.blob();
@@ -218,6 +224,20 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
     if (p.portfolio) contactItems.push({ label: 'Portfolio', url: p.portfolio.startsWith('http') ? p.portfolio : `https://${p.portfolio}` });
     if (p.website) contactItems.push({ label: 'Website', url: p.website.startsWith('http') ? p.website : `https://${p.website}` });
   }
+
+  // Defensive segregation: Ensure Open-Source & Research entries (like CareerXAI and PyRewind)
+  // are ALWAYS presented in the dedicated 'Open-Source Software & Research' section.
+  const isResearchOrOs = (pr: { name?: string; subtitle?: string; description?: string }) =>
+    /careerxai|pyrewind|symbolic ai|independent research|open-source/i.test(
+      `${pr.name || ''} ${pr.subtitle || ''} ${pr.description || ''}`
+    );
+
+  const openSourceList = [
+    ...(resume.openSourceProjects || []),
+    ...(resume.projects || []).filter(isResearchOrOs),
+  ].filter((proj, idx, arr) => arr.findIndex((p) => p.name.toLowerCase() === proj.name.toLowerCase()) === idx);
+
+  const standardProjectList = (resume.projects || []).filter((proj) => !isResearchOrOs(proj));
 
   return (
     <div className="tailored-view fade-in">
@@ -523,7 +543,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
             )}
 
             {/* 3. Open-Source Software & Research */}
-            {resume.openSourceProjects && resume.openSourceProjects.length > 0 && (
+            {openSourceList.length > 0 && (
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
                   <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
@@ -531,7 +551,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                   </h2>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {resume.openSourceProjects.map((proj, pIdx) => (
+                  {openSourceList.map((proj, pIdx) => (
                     <div key={pIdx}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                         <div>
@@ -585,15 +605,15 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
             )}
 
             {/* 4. Key Projects */}
-            {resume.projects && resume.projects.length > 0 && (
+            {standardProjectList.length > 0 && (
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
                   <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    {resume.openSourceProjects?.length ? 'Key Projects' : 'Key Projects & Research'}
+                    {openSourceList.length > 0 ? 'Key Projects' : 'Key Projects & Research'}
                   </h2>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {resume.projects.map((proj, pIdx) => (
+                  {standardProjectList.map((proj, pIdx) => (
                     <div key={pIdx}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                         <div>

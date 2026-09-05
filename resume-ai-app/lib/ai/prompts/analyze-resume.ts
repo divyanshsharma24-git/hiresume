@@ -9,7 +9,9 @@ IMPORTANT RULES:
 - If a field is not present, use an empty string or empty array
 - Preserve all original dates, metrics, and facts exactly as written
 - For experience bullets, extract each bullet point as a separate string in the array
-- CRITICAL FOR HYPERLINKS: If 'EMBEDDED DOCUMENT HYPERLINKS' are listed at the bottom, accurately map each URL with its matching label (e.g. LinkedIn, GitHub, Portfolio, Website, PyPI, specific projects like SRI ERP, FleetOS, Resume Analyzer, and certification view links). Preserve every link!
+- CRITICAL FOR OPEN-SOURCE & RESEARCH: Look for sections titled "OPEN-SOURCE SOFTWARE & RESEARCH", "OPEN SOURCE", "RESEARCH", or "ACADEMIC RESEARCH" (containing projects such as PyRewind, CareerXAI (Independent Research), etc.). Parse these into the "openSourceProjects" array! Preserve their exact names, subtitles, URLs, and every hyperlinked document (e.g. State-of-the-Art Seminar, Prototype, Doc1, Doc2, PyPI, GitHub, Documentation). NEVER omit or merge away CareerXAI or any research work!
+- Standard technical/application projects (e.g., SRI ERP & Accounts, FleetOS, Resume Analyzer AI) go into the "projects" array.
+- CRITICAL FOR HYPERLINKS: If 'EMBEDDED DOCUMENT HYPERLINKS' are listed at the bottom, accurately map each URL with its matching label (e.g. LinkedIn, GitHub, Portfolio, Website, PyPI, specific projects like SRI ERP, FleetOS, Resume Analyzer, CareerXAI documents, and certification view links). Preserve every link!
 
 Resume text:
 """
@@ -50,6 +52,17 @@ Return ONLY valid JSON (no markdown, no code fences) matching this exact schema:
       "subtitle": "string (optional secondary role/details)",
       "bullets": ["array of bullet point strings"],
       "links": [{ "label": "string (e.g. LinkedIn)", "url": "string" }]
+    }
+  ],
+  "openSourceProjects": [
+    {
+      "name": "string (e.g. 'PyRewind', 'CareerXAI (Independent Research)')",
+      "subtitle": "string (e.g. 'Independent Academic Research — IIT Jodhpur | May 2026 – Present' or 'Creator & Maintainer | Published on PyPI')",
+      "description": "string (e.g. 'Career Recommendation using Symbolic AI' or 'Python Execution Tracing & Debugging Library')",
+      "technologies": ["array of tech strings"],
+      "url": "string",
+      "bullets": ["array of bullet point strings"],
+      "links": [{ "label": "string (e.g. State-of-the-Art Seminar, Prototype, Doc1, Doc2, PyPI, GitHub, Documentation)", "url": "string" }]
     }
   ],
   "projects": [

@@ -153,6 +153,29 @@ export async function POST(req: NextRequest) {
         },
       };
     }
+
+    // Guarantee Open-Source & Research section preservation
+    const isResearchOrOs = (p: { name?: string; subtitle?: string; description?: string }) =>
+      /careerxai|pyrewind|symbolic ai|independent research|open-source/i.test(`${p.name || ''} ${p.subtitle || ''} ${p.description || ''}`);
+
+    const existingOs = resumeData.openSourceProjects ? [...resumeData.openSourceProjects] : [];
+    const regularProjects: typeof resumeData.projects = [];
+
+    (resumeData.projects || []).forEach((proj) => {
+      if (isResearchOrOs(proj)) {
+        if (!existingOs.some((op) => op.name.toLowerCase().includes(proj.name.toLowerCase()))) {
+          existingOs.push(proj);
+        }
+      } else {
+        regularProjects.push(proj);
+      }
+    });
+
+    if (existingOs.length > 0) {
+      resumeData.openSourceProjects = existingOs;
+      resumeData.projects = regularProjects;
+    }
+
     return NextResponse.json({ resumeData, resumeText });
   } catch (err: unknown) {
     console.error('[parse-resume] Error:', err);

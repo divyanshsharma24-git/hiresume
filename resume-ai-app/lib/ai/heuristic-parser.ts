@@ -56,17 +56,19 @@ export function heuristicParseResume(text: string): ResumeData {
     summary: /^(?:professional\s+summary|summary|about\s+me|objective)/i,
     skills: /^(?:technical\s+skills|skills|technologies|core\s+competencies)/i,
     experience: /^(?:experience|work\s+experience|employment\s+history|professional\s+experience)/i,
+    openSourceProjects: /^(?:open-source\s+software\s*&\s*research|open-source\s+software|open-source\s+projects|open\s+source|research\s+projects|academic\s+research|research)/i,
     projects: /^(?:projects|academic\s+projects|key\s+projects|personal\s+projects)/i,
     education: /^(?:education|academic\s+background|qualifications)/i,
     certifications: /^(?:certifications|certificates|licenses)/i,
   };
 
-  type SectionKey = 'summary' | 'skills' | 'experience' | 'projects' | 'education' | 'certifications' | 'other';
+  type SectionKey = 'summary' | 'skills' | 'experience' | 'openSourceProjects' | 'projects' | 'education' | 'certifications' | 'other';
   let currentSection: SectionKey = 'other';
   const sectionLines: Record<SectionKey, string[]> = {
     summary: [],
     skills: [],
     experience: [],
+    openSourceProjects: [],
     projects: [],
     education: [],
     certifications: [],
@@ -76,7 +78,7 @@ export function heuristicParseResume(text: string): ResumeData {
   for (const line of lines) {
     let matchedSection: SectionKey | null = null;
     for (const [key, regex] of Object.entries(sectionKeywords)) {
-      if (regex.test(line.replace(/[^a-zA-Z\s]/g, '').trim())) {
+      if (regex.test(line.replace(/[^a-zA-Z\s&]/g, '').trim())) {
         matchedSection = key as SectionKey;
         break;
       }
@@ -149,7 +151,37 @@ export function heuristicParseResume(text: string): ResumeData {
     experience.push(curExp);
   }
 
-  // 6. Process Projects
+  // 6. Process Open-Source & Research Projects
+  const openSourceProjects: ProjectEntry[] = [];
+  let curOsProj: ProjectEntry | null = null;
+
+  for (const line of sectionLines.openSourceProjects) {
+    const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('·');
+    if (isBullet && curOsProj) {
+      curOsProj.bullets.push(line.replace(/^[•\-*·]\s*/, '').trim());
+    } else if (!isBullet && line.length < 80) {
+      if (curOsProj && curOsProj.bullets.length > 0) {
+        openSourceProjects.push(curOsProj);
+      }
+      const parts = line.split(/[|•\-:]/);
+      const projName = parts[0]?.trim() || 'Open Source Project';
+      const techPart = parts.slice(1).join(', ').trim();
+      curOsProj = {
+        name: projName,
+        subtitle: techPart,
+        description: techPart || 'Open source software and academic research',
+        technologies: techPart ? techPart.split(/[,/]/).map((t) => t.trim()).filter(Boolean) : ['Python', 'Symbolic AI'],
+        bullets: [],
+      };
+    } else if (curOsProj) {
+      curOsProj.bullets.push(line.trim());
+    }
+  }
+  if (curOsProj && curOsProj.bullets.length > 0) {
+    openSourceProjects.push(curOsProj);
+  }
+
+  // 7. Process Key Projects
   const projects: ProjectEntry[] = [];
   let curProj: ProjectEntry | null = null;
 
@@ -179,7 +211,22 @@ export function heuristicParseResume(text: string): ResumeData {
     projects.push(curProj);
   }
 
-  // 7. Process Education
+  // Auto-segregate CareerXAI and PyRewind if they landed in projects
+  const isResearchOrOs = (p: ProjectEntry) =>
+    /careerxai|pyrewind|symbolic ai|independent research|open-source/i.test(`${p.name} ${p.subtitle || ''} ${p.description || ''}`);
+
+  const remainingProjects: ProjectEntry[] = [];
+  for (const p of projects) {
+    if (isResearchOrOs(p)) {
+      if (!openSourceProjects.some((op) => op.name.toLowerCase().includes(p.name.toLowerCase()))) {
+        openSourceProjects.push(p);
+      }
+    } else {
+      remainingProjects.push(p);
+    }
+  }
+
+  // 8. Process Education
   const education: EducationEntry[] = [];
   const eduText = sectionLines.education.join('\n');
   education.push({
@@ -216,7 +263,8 @@ export function heuristicParseResume(text: string): ResumeData {
         bullets: ['Designed and maintained full-stack web applications and backend REST APIs.'],
       },
     ],
-    projects: projects.length > 0 ? projects : [
+    openSourceProjects: openSourceProjects.length > 0 ? openSourceProjects : undefined,
+    projects: remainingProjects.length > 0 ? remainingProjects : projects.length > 0 ? projects : [
       {
         name: 'Fullstack Web Application',
         description: 'Scalable web application built with modern component architecture and REST APIs',

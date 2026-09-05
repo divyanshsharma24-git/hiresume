@@ -36,10 +36,16 @@ NON-NEGOTIABLE ATS OPTIMIZATION & CANDIDATE-AUTHORIZED DIRECTIVES:
 2. AUTHENTIC, HIGH-IMPACT RE-PHRASING:
    - Ensure every added keyword sounds natural, cohesive, and deeply integrated into the candidate's existing projects and experience. Avoid keyword stuffing; write production-grade engineering bullets with strong action verbs (Architected, Engineered, Developed, Deployed, Optimized), technical scope, and measurable business outcomes.
 
-3. STRATEGIC PROJECT PRIORITIZATION & REORDERING:
-   - Reorder projects so that those most relevant to the target JD appear FIRST:
-     * Priority: Full-stack web applications, role-based dashboards, authentication flows, REST API backends, MySQL/database relationships, and business management systems (e.g., School ERP & Accounts, Fleet Management, NLP Web Apps, PyRewind).
-     * Move lower-relevance projects (pure physics simulations, RF wall sensing, specialized research) to the bottom or compress them to conserve space.
+3. STRICT SECTION & PROJECT PRESERVATION (ZERO OMISSIONS / ZERO DROPPING):
+   - CRITICAL USER MANDATE: DO NOT remove, delete, drop, or change any resume sections or projects!
+   - You MUST ONLY modify, tailor, and enhance the wording, bullet points, and technologies for maximum ATS match.
+   - EVERY SINGLE entry in openSourceProjects MUST be preserved. Specifically, CareerXAI (Independent Research) and PyRewind MUST ALWAYS remain in openSourceProjects with:
+     * Exact original name, subtitle (e.g. 'Independent Academic Research — IIT Jodhpur | May 2026 – Present'), and description ('Career Recommendation using Symbolic AI').
+     * ALL original hyperlinks (State-of-the-Art Seminar, Prototype, Doc1, Doc2, PyPI, GitHub, Documentation).
+     * Bullets optimized for ATS, highlighting rule-based systems, expert inference, knowledge bases, and API integration.
+     * NEVER return an empty openSourceProjects array if the input resume has openSourceProjects or research work!
+   - EVERY SINGLE entry in projects (e.g., SRI ERP & SRI Accounts, FleetOS, Resume Analyzer AI, Python3D, J.A.R.V.I.S., etc.) MUST be preserved. Contextualize target keywords (Next.js, FastAPI, REST APIs, MySQL, RBAC) into their bullets, but NEVER delete or drop any project.
+   - You may reorder projects within their respective section so the most JD-relevant appear at the top, but every project must remain in the output.
 
 4. ATS ENGINEERING TERMINOLOGY ENHANCEMENT:
    - Front-load and naturally integrate high-priority ATS terminology in bullet points:

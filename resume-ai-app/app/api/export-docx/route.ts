@@ -399,13 +399,27 @@ export async function POST(req: NextRequest) {
       });
     };
 
-    if (resumeData.openSourceProjects && resumeData.openSourceProjects.length > 0) {
-      renderProjectList('Open-Source Software & Research', resumeData.openSourceProjects);
+    // Defensive segregation: Ensure Open-Source & Research entries (like CareerXAI and PyRewind)
+    // are ALWAYS presented in the dedicated 'Open-Source Software & Research' section.
+    const isResearchOrOs = (pr: { name?: string; subtitle?: string; description?: string }) =>
+      /careerxai|pyrewind|symbolic ai|independent research|open-source/i.test(
+        `${pr.name || ''} ${pr.subtitle || ''} ${pr.description || ''}`
+      );
+
+    const openSourceList = [
+      ...(resumeData.openSourceProjects || []),
+      ...(resumeData.projects || []).filter(isResearchOrOs),
+    ].filter((proj, idx, arr) => arr.findIndex((p) => p.name.toLowerCase() === proj.name.toLowerCase()) === idx);
+
+    const standardProjectList = (resumeData.projects || []).filter((proj) => !isResearchOrOs(proj));
+
+    if (openSourceList.length > 0) {
+      renderProjectList('Open-Source Software & Research', openSourceList);
     }
 
-    if (resumeData.projects?.length > 0) {
-      const projTitle = resumeData.openSourceProjects?.length ? 'Key Projects' : 'Key Projects & Research';
-      renderProjectList(projTitle, resumeData.projects);
+    if (standardProjectList.length > 0) {
+      const projTitle = openSourceList.length ? 'Key Projects' : 'Key Projects & Research';
+      renderProjectList(projTitle, standardProjectList);
     }
 
     // 7. Education

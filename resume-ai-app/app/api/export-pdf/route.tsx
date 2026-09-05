@@ -173,6 +173,20 @@ function ResumeDocument({ data }: { data: ResumeData }) {
     if (p.website) contactLinks.push({ label: 'Website', url: p.website.startsWith('http') ? p.website : `https://${p.website}` });
   }
 
+  // Defensive segregation: Ensure Open-Source & Research entries (like CareerXAI and PyRewind)
+  // are ALWAYS presented in the dedicated 'Open-Source Software & Research' section.
+  const isResearchOrOs = (pr: { name?: string; subtitle?: string; description?: string }) =>
+    /careerxai|pyrewind|symbolic ai|independent research|open-source/i.test(
+      `${pr.name || ''} ${pr.subtitle || ''} ${pr.description || ''}`
+    );
+
+  const openSourceList = [
+    ...(data.openSourceProjects || []),
+    ...(data.projects || []).filter(isResearchOrOs),
+  ].filter((proj, idx, arr) => arr.findIndex((p) => p.name.toLowerCase() === proj.name.toLowerCase()) === idx);
+
+  const standardProjectList = (data.projects || []).filter((proj) => !isResearchOrOs(proj));
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -239,11 +253,11 @@ function ResumeDocument({ data }: { data: ResumeData }) {
         ) : null}
 
         {/* ── Open-Source Software & Research ── */}
-        {data.openSourceProjects?.length ? (
+        {openSourceList.length > 0 ? (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Open-Source Software & Research</Text>
             <View style={styles.sectionDivider} />
-            {data.openSourceProjects.map((proj, i) => (
+            {openSourceList.map((proj, i) => (
               <View key={i} style={styles.entry}>
                 <View style={styles.entryHeader}>
                   <View style={styles.entryTitleLine}>
@@ -277,11 +291,11 @@ function ResumeDocument({ data }: { data: ResumeData }) {
         ) : null}
 
         {/* ── Key Projects ── */}
-        {data.projects?.length > 0 ? (
+        {standardProjectList.length > 0 ? (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{data.openSourceProjects?.length ? 'Key Projects' : 'Key Projects & Research'}</Text>
+            <Text style={styles.sectionTitle}>{openSourceList.length ? 'Key Projects' : 'Key Projects & Research'}</Text>
             <View style={styles.sectionDivider} />
-            {data.projects.map((proj, i) => (
+            {standardProjectList.map((proj, i) => (
               <View key={i} style={styles.entry}>
                 <View style={styles.entryHeader}>
                   <View style={styles.entryTitleLine}>
