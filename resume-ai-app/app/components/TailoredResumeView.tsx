@@ -460,21 +460,21 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                 </div>
                 <div className="a4-sheet">
                   {/* Header */}
-                  <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-                    <h1 style={{ fontSize: '22px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, color: '#020617' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, color: '#020617' }}>
                       {p.name || 'DIVYANSH SHARMA'}
                     </h1>
 
                     {resume.title && (
-                      <div style={{ marginTop: '3px', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '11.5px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em' }}>
+                      <div style={{ marginTop: '2px', marginBottom: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '10.8px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em' }}>
                           {resume.title}
                         </span>
                         {original?.title && original.title !== resume.title && (
                           <button
                             type="button"
                             onClick={handleUndoTitle}
-                            style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer' }}
+                            style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer' }}
                             title="Undo title change"
                           >
                             Undo
@@ -483,10 +483,10 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                       </div>
                     )}
 
-                    <div style={{ fontSize: '10px', color: '#475569', marginTop: '2px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '9.5px', color: '#475569', marginTop: '1px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '3px' }}>
                       {contactItems.map((item, i) => (
                         <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}>
-                          {i > 0 && <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>}
+                          {i > 0 && <span style={{ color: '#94a3b8', margin: '0 3px' }}>|</span>}
                           {item.url ? (
                             <a href={item.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                               {item.label}
@@ -501,9 +501,9 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 1. Professional Summary */}
                   {resume.summary && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '9px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Professional Summary
                         </h2>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -511,7 +511,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                             <button
                               type="button"
                               onClick={handleUndoSummary}
-                              style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer' }}
+                              style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer' }}
                             >
                               Undo
                             </button>
@@ -519,7 +519,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                           <button
                             type="button"
                             onClick={() => setIsEditingSummary(!isEditingSummary)}
-                            style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '10px', cursor: 'pointer' }}
+                            style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '9.5px', cursor: 'pointer' }}
                           >
                             {isEditingSummary ? 'Cancel' : 'Edit'}
                           </button>
@@ -527,28 +527,28 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                       </div>
 
                       {isEditingSummary ? (
-                        <div style={{ marginTop: '5px' }}>
+                        <div style={{ marginTop: '4px' }}>
                           <textarea
                             value={summaryDraft}
                             onChange={(e) => setSummaryDraft(e.target.value)}
                             rows={3}
-                            style={{ width: '100%', padding: '6px', fontSize: '11px', fontFamily: 'inherit', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                            style={{ width: '100%', padding: '5px', fontSize: '10.5px', fontFamily: 'inherit', border: '1px solid #cbd5e1', borderRadius: '4px' }}
                           />
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '3px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '2px' }}>
                             <button
                               type="button"
                               onClick={() => {
                                 setResume((prev) => ({ ...prev, summary: summaryDraft }));
                                 setIsEditingSummary(false);
                               }}
-                              style={{ padding: '3px 8px', fontSize: '10px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                              style={{ padding: '2px 8px', fontSize: '9.5px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                             >
                               Save
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <p style={{ fontSize: '11px', color: '#1e293b', margin: 0, textAlign: 'justify', lineHeight: 1.45 }}>
+                        <p style={{ fontSize: '10.5px', color: '#1e293b', margin: 0, textAlign: 'justify', lineHeight: 1.36 }}>
                           {resume.summary}
                         </p>
                       )}
@@ -557,47 +557,47 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 2. Professional Experience */}
                   {resume.experience && resume.experience.length > 0 && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '9px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Professional Experience
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                         {resume.experience.map((exp, expIdx) => (
                           <div key={expIdx}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                               <div>
-                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{exp.title}</strong>
-                                <span style={{ color: '#1e293b', fontSize: '11px' }}>
+                                <strong style={{ fontSize: '10.5px', color: '#0f172a' }}>{exp.title}</strong>
+                                <span style={{ color: '#1e293b', fontSize: '10.5px' }}>
                                   {exp.company ? ` — ${exp.company}` : ''}
                                   {exp.location && !exp.company?.includes(exp.location) ? ` , ${exp.location}` : ''}
                                 </span>
                                 {exp.links?.map((l, li) => (
-                                  <span key={li} style={{ marginLeft: '6px', fontSize: '10px' }}>
+                                  <span key={li} style={{ marginLeft: '5px', fontSize: '9.5px' }}>
                                     <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                       {l.label}
                                     </a>
                                   </span>
                                 ))}
                               </div>
-                              <span style={{ fontSize: '10px', color: '#334155', fontFamily: 'sans-serif' }}>
+                              <span style={{ fontSize: '9.5px', color: '#334155', fontFamily: 'sans-serif' }}>
                                 {exp.startDate} – {exp.endDate}
                               </span>
                             </div>
                             {exp.subtitle && (
-                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                              <div style={{ fontSize: '9.5px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '1px' }}>
                                 {exp.subtitle}
                               </div>
                             )}
-                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                            <ul style={{ margin: '2px 0 0 0', paddingLeft: '12px', listStyleType: 'disc', fontSize: '10.5px', color: '#1e293b' }}>
                               {exp.bullets.map((bullet, bIdx) => (
-                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                <li key={bIdx} style={{ marginBottom: '1px', lineHeight: 1.34 }}>
                                   <span>{bullet}</span>
                                   <button
                                     type="button"
                                     onClick={() => handleUndoExpBullet(expIdx, bIdx)}
-                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '5px' }}
                                   >
                                     Undo
                                   </button>
@@ -612,26 +612,26 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 3. Open-Source Software & Research */}
                   {openSourceList.length > 0 && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '9px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Open-Source Software & Research
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                         {openSourceList.map((proj, pIdx) => (
                           <div key={pIdx}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                               <div>
-                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                <strong style={{ fontSize: '10.5px', color: '#0f172a' }}>{proj.name}</strong>
                                 {proj.description && (
-                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                  <span style={{ fontSize: '10.5px', color: '#1e293b' }}> — {proj.description}</span>
                                 )}
                                 {proj.links && proj.links.length > 0 ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '4px' }}>
                                     {proj.links.map((l, lIdx) => (
                                       <span key={lIdx}>
-                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>{lIdx === 0 ? ': ' : ' | '}</span>
+                                        <span style={{ color: '#94a3b8', margin: '0 3px' }}>{lIdx === 0 ? ': ' : ' | '}</span>
                                         <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                           {l.label}
                                         </a>
@@ -639,7 +639,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                     ))}
                                   </span>
                                 ) : proj.url ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '5px' }}>
                                     <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                       Link
                                     </a>
@@ -648,18 +648,18 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                               </div>
                             </div>
                             {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
-                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                              <div style={{ fontSize: '9.5px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '1px' }}>
                                 {proj.subtitle || proj.technologies?.join(', ')}
                               </div>
                             )}
-                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                            <ul style={{ margin: '2px 0 0 0', paddingLeft: '12px', listStyleType: 'disc', fontSize: '10.5px', color: '#1e293b' }}>
                               {proj.bullets.map((bullet, bIdx) => (
-                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                <li key={bIdx} style={{ marginBottom: '1px', lineHeight: 1.34 }}>
                                   <span>{bullet}</span>
                                   <button
                                     type="button"
                                     onClick={() => handleUndoOpenSourceBulletByName(proj.name, bIdx)}
-                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '5px' }}
                                   >
                                     Undo
                                   </button>
@@ -674,26 +674,26 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 4. Key Projects (Part 1 - Top Relevant Projects) */}
                   {p1Projects.length > 0 && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           {openSourceList.length > 0 ? 'Key Projects' : 'Key Projects & Research'}
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                         {p1Projects.map((proj, pIdx) => (
                           <div key={pIdx}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                               <div>
-                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                <strong style={{ fontSize: '10.5px', color: '#0f172a' }}>{proj.name}</strong>
                                 {proj.description && (
-                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                  <span style={{ fontSize: '10.5px', color: '#1e293b' }}> — {proj.description}</span>
                                 )}
                                 {proj.links && proj.links.length > 0 ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '4px' }}>
                                     {proj.links.map((l, lIdx) => (
                                       <span key={lIdx}>
-                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>
+                                        <span style={{ color: '#94a3b8', margin: '0 3px' }}>|</span>
                                         <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                           {l.label}
                                         </a>
@@ -701,7 +701,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                     ))}
                                   </span>
                                 ) : proj.url ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '5px' }}>
                                     <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                       Link
                                     </a>
@@ -710,18 +710,18 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                               </div>
                             </div>
                             {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
-                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                              <div style={{ fontSize: '9.5px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '1px' }}>
                                 {proj.subtitle || proj.technologies?.join(', ')}
                               </div>
                             )}
-                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                            <ul style={{ margin: '2px 0 0 0', paddingLeft: '12px', listStyleType: 'disc', fontSize: '10.5px', color: '#1e293b' }}>
                               {proj.bullets.map((bullet, bIdx) => (
-                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                <li key={bIdx} style={{ marginBottom: '1px', lineHeight: 1.34 }}>
                                   <span>{bullet}</span>
                                   <button
                                     type="button"
                                     onClick={() => handleUndoProjBulletByName(proj.name, bIdx)}
-                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '5px' }}
                                   >
                                     Undo
                                   </button>
@@ -735,7 +735,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                   )}
 
                   {/* Bottom Page 1 Indicator */}
-                  <div style={{ position: 'absolute', bottom: '16px', right: '40px', fontSize: '9.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                  <div style={{ position: 'absolute', bottom: '12px', right: '36px', fontSize: '9px', color: '#94a3b8', fontStyle: 'italic' }}>
                     Page 1 of 2
                   </div>
                 </div>
@@ -751,37 +751,37 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                 </div>
                 <div className="a4-sheet">
                   {/* Page 2 Running Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #cbd5e1', paddingBottom: '4px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       {p.name || 'DIVYANSH SHARMA'} — {resume.title ? resume.title.split('|')[0].trim() : 'Resume'}
                     </span>
-                    <span style={{ fontSize: '9.5px', color: '#64748b' }}>
+                    <span style={{ fontSize: '9px', color: '#64748b' }}>
                       Page 2 of 2
                     </span>
                   </div>
 
                   {/* 4. Key Projects (Part 2 - Continued) */}
                   {p2Projects.length > 0 && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Key Projects (Continued)
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                         {p2Projects.map((proj, pIdx) => (
                           <div key={pIdx}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
                               <div>
-                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                <strong style={{ fontSize: '10.5px', color: '#0f172a' }}>{proj.name}</strong>
                                 {proj.description && (
-                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                  <span style={{ fontSize: '10.5px', color: '#1e293b' }}> — {proj.description}</span>
                                 )}
                                 {proj.links && proj.links.length > 0 ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '4px' }}>
                                     {proj.links.map((l, lIdx) => (
                                       <span key={lIdx}>
-                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>
+                                        <span style={{ color: '#94a3b8', margin: '0 3px' }}>|</span>
                                         <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                           {l.label}
                                         </a>
@@ -789,7 +789,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                     ))}
                                   </span>
                                 ) : proj.url ? (
-                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                  <span style={{ fontSize: '9.5px', marginLeft: '5px' }}>
                                     <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
                                       Link
                                     </a>
@@ -798,18 +798,18 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                               </div>
                             </div>
                             {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
-                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                              <div style={{ fontSize: '9.5px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '1px' }}>
                                 {proj.subtitle || proj.technologies?.join(', ')}
                               </div>
                             )}
-                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                            <ul style={{ margin: '2px 0 0 0', paddingLeft: '12px', listStyleType: 'disc', fontSize: '10.5px', color: '#1e293b' }}>
                               {proj.bullets.map((bullet, bIdx) => (
-                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                <li key={bIdx} style={{ marginBottom: '1px', lineHeight: 1.34 }}>
                                   <span>{bullet}</span>
                                   <button
                                     type="button"
                                     onClick={() => handleUndoProjBulletByName(proj.name, bIdx)}
-                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '5px' }}
                                   >
                                     Undo
                                   </button>
@@ -824,30 +824,30 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 5. Education */}
                   {resume.education && resume.education.length > 0 && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Education
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '10.5px' }}>
                         {resume.education.map((edu, idx) => (
                           <div key={idx}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                               <div>
-                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>
+                                <strong style={{ fontSize: '10.5px', color: '#0f172a' }}>
                                   {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
                                 </strong>
                                 {edu.institution && (
                                   <span style={{ color: '#1e293b' }}> — {edu.institution}</span>
                                 )}
                               </div>
-                              <span style={{ fontSize: '10px', color: '#334155', fontFamily: 'sans-serif' }}>
+                              <span style={{ fontSize: '9.5px', color: '#334155', fontFamily: 'sans-serif' }}>
                                 {edu.startDate} – {edu.endDate}
                               </span>
                             </div>
                             {(edu.subtitle || edu.gpa || edu.honors) && (
-                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
+                              <div style={{ fontSize: '9.5px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
                                 {edu.subtitle || [edu.gpa ? `CGPA: ${edu.gpa}` : '', edu.honors].filter(Boolean).join(' | ')}
                               </div>
                             )}
@@ -859,31 +859,31 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 6. Technical Skills */}
                   {(resume.skillCategories?.length || resume.skills?.length) && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Technical Skills
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '10.5px' }}>
                         {resume.skillCategories && resume.skillCategories.length > 0 ? (
                           resume.skillCategories.map((cat, idx) => (
                             <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                              <div style={{ flex: 1, lineHeight: 1.45 }}>
+                              <div style={{ flex: 1, lineHeight: 1.34 }}>
                                 <strong style={{ color: '#0f172a' }}>{cat.category}: </strong>
                                 <span style={{ color: '#1e293b' }}>{cat.skills.join(', ')}</span>
                               </div>
                               <button
                                 type="button"
                                 onClick={() => handleUndoSkill(idx)}
-                                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '5px' }}
                               >
                                 Undo
                               </button>
                             </div>
                           ))
                         ) : (
-                          <div style={{ color: '#1e293b', lineHeight: 1.45 }}>{resume.skills.join(', ')}</div>
+                          <div style={{ color: '#1e293b', lineHeight: 1.34 }}>{resume.skills.join(', ')}</div>
                         )}
                       </div>
                     </div>
@@ -891,13 +891,13 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
                   {/* 7. Certifications & Professional Training */}
                   {resume.certifications && resume.certifications.length > 0 && (
-                    <div style={{ marginBottom: '13px' }}>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Certifications & Professional Training
                         </h2>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '10.5px' }}>
                         {resume.certifications.map((cert, idx) => (
                           <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                             <div>
@@ -921,14 +921,14 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                   {/* 8. Scholastic Achievements */}
                   {resume.achievements && resume.achievements.length > 0 && (
                     <div>
-                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
-                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '1px', marginBottom: '4px' }}>
+                        <h2 style={{ fontSize: '10.5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
                           Scholastic Achievements
                         </h2>
                       </div>
-                      <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                      <ul style={{ margin: '2px 0 0 0', paddingLeft: '12px', listStyleType: 'disc', fontSize: '10.5px', color: '#1e293b' }}>
                         {resume.achievements.map((ach, idx) => (
-                          <li key={idx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                          <li key={idx} style={{ marginBottom: '1px', lineHeight: 1.34 }}>
                             <span>{ach}</span>
                           </li>
                         ))}
@@ -937,7 +937,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                   )}
 
                   {/* Bottom Page 2 Indicator */}
-                  <div style={{ position: 'absolute', bottom: '16px', right: '40px', fontSize: '9.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                  <div style={{ position: 'absolute', bottom: '12px', right: '36px', fontSize: '9px', color: '#94a3b8', fontStyle: 'italic' }}>
                     Page 2 of 2
                   </div>
                 </div>
