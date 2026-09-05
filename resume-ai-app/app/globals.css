@@ -1061,3 +1061,145 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ============================================================
+   A4 2-PAGE PRINTABLE RESUME SYSTEM
+   ============================================================ */
+.a4-viewport-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.a4-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  max-width: 794px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+  transition: max-width 0.25s ease;
+}
+
+.a4-toolbar.side-by-side {
+  max-width: 1640px;
+}
+
+.app-main:has(.a4-pages-wrapper.side-by-side) {
+  max-width: 1720px;
+}
+
+.a4-pages-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.a4-pages-wrapper.side-by-side {
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  max-width: 1700px;
+}
+
+.a4-page-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 794px;
+}
+
+.a4-page-header-tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 6px 8px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.a4-sheet {
+  width: 100%;
+  max-width: 794px;
+  min-height: 1123px;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 4px;
+  padding: 44px 50px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #cbd5e1;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.42;
+  font-size: 11.5px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .app-header,
+  .step-bar,
+  .score-boost-banner,
+  .tailored-tabs,
+  .view-tabs,
+  .a4-toolbar,
+  .a4-page-header-tag,
+  .a4-sheet button,
+  footer {
+    display: none !important;
+  }
+  .a4-pages-wrapper {
+    display: block !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .a4-page-unit {
+    max-width: none !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .a4-sheet {
+    max-width: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    padding: 12mm 15mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  .a4-page-unit:last-child .a4-sheet {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+}
+

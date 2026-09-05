@@ -29,6 +29,8 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
   const [resume, setResume] = useState<ResumeData>(result.tailoredResume);
   const [original] = useState<ResumeData | null>(originalResumeData || null);
   const [activeTab, setActiveTab] = useState<TabType>('preview');
+  // View mode for A4 2-page presentation
+  const [viewMode, setViewMode] = useState<'stacked' | 'side-by-side'>('stacked');
 
   // Undo tracking
   const [undoneKeys, setUndoneKeys] = useState<Set<string>>(new Set());
@@ -168,6 +170,22 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
     setUndoneKeys(next);
   };
 
+  const handleUndoProjBulletByName = (projName: string, bIdx: number) => {
+    const idx = resume.projects.findIndex((p) => p.name.toLowerCase() === projName.toLowerCase());
+    if (idx !== -1) {
+      handleUndoProjBullet(idx, bIdx);
+    }
+  };
+
+  const handleUndoOpenSourceBulletByName = (projName: string, bIdx: number) => {
+    const idx = (resume.openSourceProjects || []).findIndex((p) => p.name.toLowerCase() === projName.toLowerCase());
+    if (idx !== -1) {
+      handleUndoOpenSourceBullet(idx, bIdx);
+    } else {
+      handleUndoProjBulletByName(projName, bIdx);
+    }
+  };
+
   const handleResetAll = () => {
     if (original) {
       setResume(original);
@@ -238,6 +256,11 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
   ].filter((proj, idx, arr) => arr.findIndex((p) => p.name.toLowerCase() === proj.name.toLowerCase()) === idx);
 
   const standardProjectList = (resume.projects || []).filter((proj) => !isResearchOrOs(proj));
+
+  // Split standard projects across Page 1 and Page 2 for balanced A4 presentation
+  const splitIdx = openSourceList.length > 0 ? Math.min(2, standardProjectList.length) : Math.ceil(standardProjectList.length / 2);
+  const p1Projects = standardProjectList.slice(0, splitIdx);
+  const p2Projects = standardProjectList.slice(splitIdx);
 
   return (
     <div className="tailored-view fade-in">
@@ -335,8 +358,8 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
       {/* ── TAB 1: Resume Preview ── */}
       {activeTab === 'preview' && (
         <div>
-          {/* Action Toolbar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          {/* Action Toolbar & A4 Page Layout Switcher */}
+          <div className={`a4-toolbar ${viewMode === 'side-by-side' ? 'side-by-side' : ''}`}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                 {undoneKeys.size === 0 ? 'All AI optimizations active' : `${undoneKeys.size} item(s) reverted`}
@@ -353,7 +376,55 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {/* 2-Page Layout Switcher */}
+              <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', padding: '2px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('stacked')}
+                  style={{
+                    padding: '4px 10px',
+                    fontSize: '0.78rem',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: viewMode === 'stacked' ? 'var(--accent)' : 'transparent',
+                    color: viewMode === 'stacked' ? '#fff' : 'var(--text-secondary)',
+                    fontWeight: viewMode === 'stacked' ? 600 : 400,
+                  }}
+                  title="Stacked layout: Page 1 and Page 2 vertical"
+                >
+                  📄 2 Pages Stacked
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('side-by-side')}
+                  style={{
+                    padding: '4px 10px',
+                    fontSize: '0.78rem',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: viewMode === 'side-by-side' ? 'var(--accent)' : 'transparent',
+                    color: viewMode === 'side-by-side' ? '#fff' : 'var(--text-secondary)',
+                    fontWeight: viewMode === 'side-by-side' ? 600 : 400,
+                  }}
+                  title="Side-by-side layout: 2-page spread for wide screens"
+                >
+                  📖 Side-by-Side (Spread)
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="btn-secondary"
+                style={{ fontSize: '0.78rem', padding: '6px 12px' }}
+                title="Direct Browser Print / Save as PDF"
+              >
+                <span>🖨️ Print Pages</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() =>
@@ -370,415 +441,509 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                 style={{ fontSize: '0.78rem', padding: '6px 12px' }}
               >
                 <SparklesIcon size={12} className="text-indigo-400" />
-                <span>Refine Summary with AI</span>
+                <span>Refine Summary</span>
               </button>
             </div>
           </div>
 
-          {/* Clean Ivy League White Document Card */}
-          <div
-            style={{
-              background: '#ffffff',
-              color: '#0f172a',
-              borderRadius: '8px',
-              padding: '48px 54px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
-              border: '1px solid #e2e8f0',
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              lineHeight: 1.45,
-              fontSize: '13px',
-              maxWidth: '850px',
-              margin: '0 auto',
-            }}
-          >
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
-              <h1 style={{ fontSize: '24px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, color: '#020617' }}>
-                {p.name || 'DIVYANSH SHARMA'}
-              </h1>
+          {/* ── 2 Actual A4 Printable Pages Viewport ── */}
+          <div className="a4-viewport-container">
+            <div className={`a4-pages-wrapper ${viewMode === 'side-by-side' ? 'side-by-side' : ''}`}>
 
-              {resume.title && (
-                <div style={{ marginTop: '4px', marginBottom: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '12.5px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em' }}>
-                    {resume.title}
-                  </span>
-                  {original?.title && original.title !== resume.title && (
-                    <button
-                      type="button"
-                      onClick={handleUndoTitle}
-                      style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '11px', textDecoration: 'underline', cursor: 'pointer' }}
-                      title="Undo title change"
-                    >
-                      Undo
-                    </button>
-                  )}
+              {/* ══════════════════════════════════════════════════════ */}
+              {/* ── PAGE 1 OF 2 (A4 Standard Printable Sheet) ── */}
+              {/* ══════════════════════════════════════════════════════ */}
+              <div className="a4-page-unit">
+                <div className="a4-page-header-tag">
+                  <span>📄 Page 1 of 2</span>
+                  <span>A4 Printable · 210 × 297 mm</span>
                 </div>
-              )}
+                <div className="a4-sheet">
+                  {/* Header */}
+                  <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+                    <h1 style={{ fontSize: '22px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, color: '#020617' }}>
+                      {p.name || 'DIVYANSH SHARMA'}
+                    </h1>
 
-              <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px' }}>
-                {contactItems.map((item, i) => (
-                  <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    {i > 0 && <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>}
-                    {item.url ? (
-                      <a href={item.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                        {item.label}
-                      </a>
-                    ) : (
-                      <span>{item.label}</span>
-                    )}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* 1. Professional Summary */}
-            {resume.summary && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Professional Summary
-                  </h2>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {original?.summary && original.summary !== resume.summary && (
-                      <button
-                        type="button"
-                        onClick={handleUndoSummary}
-                        style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '11px', textDecoration: 'underline', cursor: 'pointer' }}
-                      >
-                        Undo
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingSummary(!isEditingSummary)}
-                      style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', cursor: 'pointer' }}
-                    >
-                      {isEditingSummary ? 'Cancel' : 'Edit'}
-                    </button>
-                  </div>
-                </div>
-
-                {isEditingSummary ? (
-                  <div style={{ marginTop: '6px' }}>
-                    <textarea
-                      value={summaryDraft}
-                      onChange={(e) => setSummaryDraft(e.target.value)}
-                      rows={4}
-                      style={{ width: '100%', padding: '8px', fontSize: '12px', fontFamily: 'inherit', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setResume((prev) => ({ ...prev, summary: summaryDraft }));
-                          setIsEditingSummary(false);
-                        }}
-                        style={{ padding: '4px 10px', fontSize: '11px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p style={{ fontSize: '12px', color: '#1e293b', margin: 0, textAlign: 'justify', lineHeight: 1.6 }}>
-                    {resume.summary}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* 2. Professional Experience */}
-            {resume.experience && resume.experience.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Professional Experience
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {resume.experience.map((exp, expIdx) => (
-                    <div key={expIdx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                        <div>
-                          <strong style={{ fontSize: '12px', color: '#0f172a' }}>{exp.title}</strong>
-                          <span style={{ color: '#1e293b', fontSize: '12px' }}>
-                            {exp.company ? ` — ${exp.company}` : ''}
-                            {exp.location && !exp.company?.includes(exp.location) ? ` , ${exp.location}` : ''}
-                          </span>
-                          {exp.links?.map((l, li) => (
-                            <span key={li} style={{ marginLeft: '6px', fontSize: '11px' }}>
-                              <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                                {l.label}
-                              </a>
-                            </span>
-                          ))}
-                        </div>
-                        <span style={{ fontSize: '11px', color: '#334155', fontFamily: 'sans-serif' }}>
-                          {exp.startDate} – {exp.endDate}
+                    {resume.title && (
+                      <div style={{ marginTop: '3px', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '11.5px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em' }}>
+                          {resume.title}
                         </span>
+                        {original?.title && original.title !== resume.title && (
+                          <button
+                            type="button"
+                            onClick={handleUndoTitle}
+                            style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer' }}
+                            title="Undo title change"
+                          >
+                            Undo
+                          </button>
+                        )}
                       </div>
-                      {exp.subtitle && (
-                        <div style={{ fontSize: '11px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
-                          {exp.subtitle}
-                        </div>
-                      )}
-                      <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'disc', fontSize: '12px', color: '#1e293b' }}>
-                        {exp.bullets.map((bullet, bIdx) => (
-                          <li key={bIdx} style={{ marginBottom: '3px', lineHeight: 1.55 }}>
-                            <span>{bullet}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleUndoExpBullet(expIdx, bIdx)}
-                              style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
-                            >
-                              Undo
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    )}
 
-            {/* 3. Open-Source Software & Research */}
-            {openSourceList.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Open-Source Software & Research
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {openSourceList.map((proj, pIdx) => (
-                    <div key={pIdx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                        <div>
-                          <strong style={{ fontSize: '12px', color: '#0f172a' }}>{proj.name}</strong>
-                          {proj.description && (
-                            <span style={{ fontSize: '12px', color: '#1e293b' }}> — {proj.description}</span>
-                          )}
-                          {proj.links && proj.links.length > 0 ? (
-                            <span style={{ fontSize: '11px', marginLeft: '4px' }}>
-                              {proj.links.map((l, lIdx) => (
-                                <span key={lIdx}>
-                                  <span style={{ color: '#94a3b8', margin: '0 4px' }}>{lIdx === 0 ? ': ' : ' | '}</span>
-                                  <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                                    {l.label}
-                                  </a>
-                                </span>
-                              ))}
-                            </span>
-                          ) : proj.url ? (
-                            <span style={{ fontSize: '11px', marginLeft: '6px' }}>
-                              <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                                Link
-                              </a>
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
-                        <div style={{ fontSize: '11px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
-                          {proj.subtitle || proj.technologies?.join(', ')}
-                        </div>
-                      )}
-                      <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'disc', fontSize: '12px', color: '#1e293b' }}>
-                        {proj.bullets.map((bullet, bIdx) => (
-                          <li key={bIdx} style={{ marginBottom: '3px', lineHeight: 1.55 }}>
-                            <span>{bullet}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleUndoOpenSourceBullet(pIdx, bIdx)}
-                              style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
-                            >
-                              Undo
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 4. Key Projects */}
-            {standardProjectList.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    {openSourceList.length > 0 ? 'Key Projects' : 'Key Projects & Research'}
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {standardProjectList.map((proj, pIdx) => (
-                    <div key={pIdx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                        <div>
-                          <strong style={{ fontSize: '12px', color: '#0f172a' }}>{proj.name}</strong>
-                          {proj.description && (
-                            <span style={{ fontSize: '12px', color: '#1e293b' }}> — {proj.description}</span>
-                          )}
-                          {proj.links && proj.links.length > 0 ? (
-                            <span style={{ fontSize: '11px', marginLeft: '4px' }}>
-                              {proj.links.map((l, lIdx) => (
-                                <span key={lIdx}>
-                                  <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>
-                                  <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                                    {l.label}
-                                  </a>
-                                </span>
-                              ))}
-                            </span>
-                          ) : proj.url ? (
-                            <span style={{ fontSize: '11px', marginLeft: '6px' }}>
-                              <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                                Link
-                              </a>
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
-                        <div style={{ fontSize: '11px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
-                          {proj.subtitle || proj.technologies?.join(', ')}
-                        </div>
-                      )}
-                      <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'disc', fontSize: '12px', color: '#1e293b' }}>
-                        {proj.bullets.map((bullet, bIdx) => (
-                          <li key={bIdx} style={{ marginBottom: '3px', lineHeight: 1.55 }}>
-                            <span>{bullet}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleUndoProjBullet(pIdx, bIdx)}
-                              style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
-                            >
-                              Undo
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 4. Education */}
-            {resume.education && resume.education.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '8px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Education
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px' }}>
-                  {resume.education.map((edu, idx) => (
-                    <div key={idx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <div>
-                          <strong style={{ fontSize: '12px', color: '#0f172a' }}>
-                            {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
-                          </strong>
-                          {edu.institution && (
-                            <span style={{ color: '#1e293b' }}> — {edu.institution}</span>
-                          )}
-                        </div>
-                        <span style={{ fontSize: '11px', color: '#334155', fontFamily: 'sans-serif' }}>
-                          {edu.startDate} – {edu.endDate}
-                        </span>
-                      </div>
-                      {(edu.subtitle || edu.gpa || edu.honors) && (
-                        <div style={{ fontSize: '11px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
-                          {edu.subtitle || [edu.gpa ? `CGPA: ${edu.gpa}` : '', edu.honors].filter(Boolean).join(' | ')}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 5. Technical Skills */}
-            {(resume.skillCategories?.length || resume.skills?.length) && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Technical Skills
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px' }}>
-                  {resume.skillCategories && resume.skillCategories.length > 0 ? (
-                    resume.skillCategories.map((cat, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <div style={{ flex: 1, lineHeight: 1.5 }}>
-                          <strong style={{ color: '#0f172a' }}>{cat.category}: </strong>
-                          <span style={{ color: '#1e293b' }}>{cat.skills.join(', ')}</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleUndoSkill(idx)}
-                          style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '10.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '8px' }}
-                        >
-                          Undo
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ color: '#1e293b', lineHeight: 1.5 }}>{resume.skills.join(', ')}</div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* 6. Certifications & Professional Training */}
-            {resume.certifications && resume.certifications.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Certifications & Professional Training
-                  </h2>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '12px' }}>
-                  {resume.certifications.map((cert, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <div>
-                        <strong style={{ color: '#0f172a' }}>{cert.name}</strong>
-                        {cert.issuer && <span style={{ color: '#1e293b' }}> — {cert.issuer}</span>}
-                        {cert.date && <span style={{ color: '#334155' }}> | {cert.date}</span>}
-                        {cert.url && (
-                          <span style={{ marginLeft: '4px' }}>
-                            <a href={cert.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
-                              (view)
+                    <div style={{ fontSize: '10px', color: '#475569', marginTop: '2px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px' }}>
+                      {contactItems.map((item, i) => (
+                        <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                          {i > 0 && <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>}
+                          {item.url ? (
+                            <a href={item.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                              {item.label}
                             </a>
-                          </span>
+                          ) : (
+                            <span>{item.label}</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 1. Professional Summary */}
+                  {resume.summary && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Professional Summary
+                        </h2>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {original?.summary && original.summary !== resume.summary && (
+                            <button
+                              type="button"
+                              onClick={handleUndoSummary}
+                              style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '10px', textDecoration: 'underline', cursor: 'pointer' }}
+                            >
+                              Undo
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingSummary(!isEditingSummary)}
+                            style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '10px', cursor: 'pointer' }}
+                          >
+                            {isEditingSummary ? 'Cancel' : 'Edit'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {isEditingSummary ? (
+                        <div style={{ marginTop: '5px' }}>
+                          <textarea
+                            value={summaryDraft}
+                            onChange={(e) => setSummaryDraft(e.target.value)}
+                            rows={3}
+                            style={{ width: '100%', padding: '6px', fontSize: '11px', fontFamily: 'inherit', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                          />
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '3px' }}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setResume((prev) => ({ ...prev, summary: summaryDraft }));
+                                setIsEditingSummary(false);
+                              }}
+                              style={{ padding: '3px 8px', fontSize: '10px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p style={{ fontSize: '11px', color: '#1e293b', margin: 0, textAlign: 'justify', lineHeight: 1.45 }}>
+                          {resume.summary}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 2. Professional Experience */}
+                  {resume.experience && resume.experience.length > 0 && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Professional Experience
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {resume.experience.map((exp, expIdx) => (
+                          <div key={expIdx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                              <div>
+                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{exp.title}</strong>
+                                <span style={{ color: '#1e293b', fontSize: '11px' }}>
+                                  {exp.company ? ` — ${exp.company}` : ''}
+                                  {exp.location && !exp.company?.includes(exp.location) ? ` , ${exp.location}` : ''}
+                                </span>
+                                {exp.links?.map((l, li) => (
+                                  <span key={li} style={{ marginLeft: '6px', fontSize: '10px' }}>
+                                    <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                      {l.label}
+                                    </a>
+                                  </span>
+                                ))}
+                              </div>
+                              <span style={{ fontSize: '10px', color: '#334155', fontFamily: 'sans-serif' }}>
+                                {exp.startDate} – {exp.endDate}
+                              </span>
+                            </div>
+                            {exp.subtitle && (
+                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                                {exp.subtitle}
+                              </div>
+                            )}
+                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                              {exp.bullets.map((bullet, bIdx) => (
+                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                  <span>{bullet}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUndoExpBullet(expIdx, bIdx)}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                  >
+                                    Undo
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3. Open-Source Software & Research */}
+                  {openSourceList.length > 0 && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Open-Source Software & Research
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {openSourceList.map((proj, pIdx) => (
+                          <div key={pIdx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                              <div>
+                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                {proj.description && (
+                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                )}
+                                {proj.links && proj.links.length > 0 ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                    {proj.links.map((l, lIdx) => (
+                                      <span key={lIdx}>
+                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>{lIdx === 0 ? ': ' : ' | '}</span>
+                                        <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                          {l.label}
+                                        </a>
+                                      </span>
+                                    ))}
+                                  </span>
+                                ) : proj.url ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                    <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                      Link
+                                    </a>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                            {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
+                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                                {proj.subtitle || proj.technologies?.join(', ')}
+                              </div>
+                            )}
+                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                              {proj.bullets.map((bullet, bIdx) => (
+                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                  <span>{bullet}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUndoOpenSourceBulletByName(proj.name, bIdx)}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                  >
+                                    Undo
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. Key Projects (Part 1 - Top Relevant Projects) */}
+                  {p1Projects.length > 0 && (
+                    <div style={{ marginBottom: '10px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          {openSourceList.length > 0 ? 'Key Projects' : 'Key Projects & Research'}
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {p1Projects.map((proj, pIdx) => (
+                          <div key={pIdx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                              <div>
+                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                {proj.description && (
+                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                )}
+                                {proj.links && proj.links.length > 0 ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                    {proj.links.map((l, lIdx) => (
+                                      <span key={lIdx}>
+                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>
+                                        <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                          {l.label}
+                                        </a>
+                                      </span>
+                                    ))}
+                                  </span>
+                                ) : proj.url ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                    <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                      Link
+                                    </a>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                            {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
+                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                                {proj.subtitle || proj.technologies?.join(', ')}
+                              </div>
+                            )}
+                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                              {proj.bullets.map((bullet, bIdx) => (
+                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                  <span>{bullet}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUndoProjBulletByName(proj.name, bIdx)}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                  >
+                                    Undo
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bottom Page 1 Indicator */}
+                  <div style={{ position: 'absolute', bottom: '16px', right: '40px', fontSize: '9.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                    Page 1 of 2
+                  </div>
+                </div>
+              </div>
+
+              {/* ══════════════════════════════════════════════════════ */}
+              {/* ── PAGE 2 OF 2 (A4 Standard Printable Sheet) ── */}
+              {/* ══════════════════════════════════════════════════════ */}
+              <div className="a4-page-unit">
+                <div className="a4-page-header-tag">
+                  <span>📄 Page 2 of 2</span>
+                  <span>A4 Printable · 210 × 297 mm</span>
+                </div>
+                <div className="a4-sheet">
+                  {/* Page 2 Running Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid #cbd5e1', paddingBottom: '4px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      {p.name || 'DIVYANSH SHARMA'} — {resume.title ? resume.title.split('|')[0].trim() : 'Resume'}
+                    </span>
+                    <span style={{ fontSize: '9.5px', color: '#64748b' }}>
+                      Page 2 of 2
+                    </span>
+                  </div>
+
+                  {/* 4. Key Projects (Part 2 - Continued) */}
+                  {p2Projects.length > 0 && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Key Projects (Continued)
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {p2Projects.map((proj, pIdx) => (
+                          <div key={pIdx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                              <div>
+                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>{proj.name}</strong>
+                                {proj.description && (
+                                  <span style={{ fontSize: '11px', color: '#1e293b' }}> — {proj.description}</span>
+                                )}
+                                {proj.links && proj.links.length > 0 ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '4px' }}>
+                                    {proj.links.map((l, lIdx) => (
+                                      <span key={lIdx}>
+                                        <span style={{ color: '#94a3b8', margin: '0 4px' }}>|</span>
+                                        <a href={l.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                          {l.label}
+                                        </a>
+                                      </span>
+                                    ))}
+                                  </span>
+                                ) : proj.url ? (
+                                  <span style={{ fontSize: '10px', marginLeft: '6px' }}>
+                                    <a href={proj.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                      Link
+                                    </a>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </div>
+                            {(proj.subtitle || (proj.technologies && proj.technologies.length > 0)) && (
+                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px', marginBottom: '2px' }}>
+                                {proj.subtitle || proj.technologies?.join(', ')}
+                              </div>
+                            )}
+                            <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                              {proj.bullets.map((bullet, bIdx) => (
+                                <li key={bIdx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                                  <span>{bullet}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUndoProjBulletByName(proj.name, bIdx)}
+                                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                                  >
+                                    Undo
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. Education */}
+                  {resume.education && resume.education.length > 0 && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Education
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px' }}>
+                        {resume.education.map((edu, idx) => (
+                          <div key={idx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <div>
+                                <strong style={{ fontSize: '11px', color: '#0f172a' }}>
+                                  {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
+                                </strong>
+                                {edu.institution && (
+                                  <span style={{ color: '#1e293b' }}> — {edu.institution}</span>
+                                )}
+                              </div>
+                              <span style={{ fontSize: '10px', color: '#334155', fontFamily: 'sans-serif' }}>
+                                {edu.startDate} – {edu.endDate}
+                              </span>
+                            </div>
+                            {(edu.subtitle || edu.gpa || edu.honors) && (
+                              <div style={{ fontSize: '10px', fontStyle: 'italic', color: '#475569', marginTop: '1px' }}>
+                                {edu.subtitle || [edu.gpa ? `CGPA: ${edu.gpa}` : '', edu.honors].filter(Boolean).join(' | ')}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. Technical Skills */}
+                  {(resume.skillCategories?.length || resume.skills?.length) && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Technical Skills
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '11px' }}>
+                        {resume.skillCategories && resume.skillCategories.length > 0 ? (
+                          resume.skillCategories.map((cat, idx) => (
+                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <div style={{ flex: 1, lineHeight: 1.45 }}>
+                                <strong style={{ color: '#0f172a' }}>{cat.category}: </strong>
+                                <span style={{ color: '#1e293b' }}>{cat.skills.join(', ')}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleUndoSkill(idx)}
+                                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '9.5px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '6px' }}
+                              >
+                                Undo
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <div style={{ color: '#1e293b', lineHeight: 1.45 }}>{resume.skills.join(', ')}</div>
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  )}
 
-            {/* 7. Scholastic Achievements */}
-            {resume.achievements && resume.achievements.length > 0 && (
-              <div>
-                <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '6px' }}>
-                  <h2 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
-                    Scholastic Achievements
-                  </h2>
+                  {/* 7. Certifications & Professional Training */}
+                  {resume.certifications && resume.certifications.length > 0 && (
+                    <div style={{ marginBottom: '13px' }}>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Certifications & Professional Training
+                        </h2>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5px', fontSize: '11px' }}>
+                        {resume.certifications.map((cert, idx) => (
+                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <div>
+                              <strong style={{ color: '#0f172a' }}>{cert.name}</strong>
+                              {cert.issuer && <span style={{ color: '#1e293b' }}> — {cert.issuer}</span>}
+                              {cert.date && <span style={{ color: '#334155' }}> | {cert.date}</span>}
+                              {cert.url && (
+                                <span style={{ marginLeft: '4px' }}>
+                                  <a href={cert.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                                    (view)
+                                  </a>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 8. Scholastic Achievements */}
+                  {resume.achievements && resume.achievements.length > 0 && (
+                    <div>
+                      <div style={{ borderBottom: '1px solid #0f172a', paddingBottom: '2px', marginBottom: '5px' }}>
+                        <h2 style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, color: '#0f172a' }}>
+                          Scholastic Achievements
+                        </h2>
+                      </div>
+                      <ul style={{ margin: '3px 0 0 0', paddingLeft: '14px', listStyleType: 'disc', fontSize: '11px', color: '#1e293b' }}>
+                        {resume.achievements.map((ach, idx) => (
+                          <li key={idx} style={{ marginBottom: '2px', lineHeight: 1.42 }}>
+                            <span>{ach}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Bottom Page 2 Indicator */}
+                  <div style={{ position: 'absolute', bottom: '16px', right: '40px', fontSize: '9.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                    Page 2 of 2
+                  </div>
                 </div>
-                <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'disc', fontSize: '12px', color: '#1e293b' }}>
-                  {resume.achievements.map((ach, idx) => (
-                    <li key={idx} style={{ marginBottom: '2.5px', lineHeight: 1.5 }}>
-                      <span>{ach}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
-            )}
+
+            </div>
           </div>
         </div>
       )}
