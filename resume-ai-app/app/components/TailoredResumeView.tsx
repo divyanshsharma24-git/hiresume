@@ -257,8 +257,11 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
 
   const standardProjectList = (resume.projects || []).filter((proj) => !isResearchOrOs(proj));
 
-  // Split standard projects across Page 1 and Page 2 for balanced A4 presentation
-  const splitIdx = openSourceList.length > 0 ? Math.min(2, standardProjectList.length) : Math.ceil(standardProjectList.length / 2);
+  // In a professional 2-page tech resume, Page 1 houses the candidate's core professional trajectory
+  // (Summary, Experience, Open Source Research, and Key Projects), while Page 2 houses
+  // their Academic & Credential profile (Education, Technical Skills taxonomy, Certifications, Scholastic Achievements).
+  // Standard projects (up to 5) stay unified on Page 1 to ensure zero mid-section cuts or awkward "(Continued)" breaks.
+  const splitIdx = standardProjectList.length > 5 ? 5 : standardProjectList.length;
   const p1Projects = standardProjectList.slice(0, splitIdx);
   const p2Projects = standardProjectList.slice(splitIdx);
 
@@ -581,7 +584,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                   </span>
                                 ))}
                               </div>
-                              <span style={{ fontSize: '9.5px', color: '#334155', fontFamily: 'sans-serif' }}>
+                              <span style={{ fontSize: '9.5px', color: '#334155' }}>
                                 {exp.startDate} – {exp.endDate}
                               </span>
                             </div>
@@ -842,7 +845,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                   <span style={{ color: '#1e293b' }}> — {edu.institution}</span>
                                 )}
                               </div>
-                              <span style={{ fontSize: '9.5px', color: '#334155', fontFamily: 'sans-serif' }}>
+                              <span style={{ fontSize: '9.5px', color: '#334155' }}>
                                 {edu.startDate} – {edu.endDate}
                               </span>
                             </div>
@@ -903,7 +906,6 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                             <div>
                               <strong style={{ color: '#0f172a' }}>{cert.name}</strong>
                               {cert.issuer && <span style={{ color: '#1e293b' }}> — {cert.issuer}</span>}
-                              {cert.date && <span style={{ color: '#334155' }}> | {cert.date}</span>}
                               {cert.url && (
                                 <span style={{ marginLeft: '4px' }}>
                                   <a href={cert.url} target="_blank" rel="noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
@@ -912,6 +914,11 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                                 </span>
                               )}
                             </div>
+                            {cert.date && (
+                              <span style={{ fontSize: '9.5px', color: '#334155' }}>
+                                {cert.date}
+                              </span>
+                            )}
                           </div>
                         ))}
                       </div>

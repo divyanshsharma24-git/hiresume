@@ -218,9 +218,9 @@ function ResumeDocument({ data }: { data: ResumeData }) {
   const standardProjectList = (data.projects || []).filter((proj) => !isResearchOrOs(proj));
 
   // Determine split for Page 1 and Page 2:
-  // If openSourceList has items (taking space on Page 1), Page 1 gets top 2 standard projects,
-  // and Page 2 gets the remaining projects.
-  const p1Count = openSourceList.length > 0 ? 2 : 3;
+  // Standard projects (up to 5) stay unified on Page 1 to ensure zero mid-section cuts,
+  // leaving Page 2 for Education, Technical Skills taxonomy, Certifications, and Achievements.
+  const p1Count = standardProjectList.length > 5 ? 5 : standardProjectList.length;
   const p1Projects = standardProjectList.slice(0, p1Count);
   const p2Projects = standardProjectList.slice(p1Count);
 
@@ -474,11 +474,10 @@ function ResumeDocument({ data }: { data: ResumeData }) {
             <Text style={styles.sectionTitle}>Certifications & Professional Training</Text>
             <View style={styles.sectionDivider} />
             {data.certifications.map((cert, i) => (
-              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1.8 }} wrap={false}>
+              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 1.8 }} wrap={false}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>
                   <Text style={styles.entryTitle}>{cert.name}</Text>
                   {cert.issuer ? <Text style={styles.entryCompany}> — {cert.issuer}</Text> : null}
-                  {cert.date ? <Text style={styles.entryCompany}> | {cert.date}</Text> : null}
                   {cert.url ? (
                     <React.Fragment>
                       <Text style={{ fontSize: 8.2 }}> </Text>
@@ -486,6 +485,7 @@ function ResumeDocument({ data }: { data: ResumeData }) {
                     </React.Fragment>
                   ) : null}
                 </View>
+                {cert.date ? <Text style={styles.entryDate}>{cert.date}</Text> : null}
               </View>
             ))}
           </View>
