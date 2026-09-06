@@ -18,6 +18,8 @@ Return ONLY valid JSON matching this exact schema (no extra text, no markdown):
 {
   "title": "string (exact job title)",
   "company": "string (company name if mentioned, else empty string)",
+  "location": "string (city/region if mentioned, e.g. 'Noida', 'Bengaluru', 'Delhi NCR', etc., else empty string)",
+  "workMode": "'remote' | 'on-site' | 'hybrid' | 'unspecified'",
   "requiredSkills": ["array of required/must-have skills"],
   "preferredSkills": ["array of preferred/nice-to-have skills"],
   "technologies": ["array of specific technologies, frameworks, platforms"],

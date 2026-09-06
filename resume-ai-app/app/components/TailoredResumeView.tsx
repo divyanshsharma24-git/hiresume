@@ -67,6 +67,25 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
     setUndoneKeys(next);
   };
 
+  const handleUndoLocation = () => {
+    if (!original?.personal?.location) return;
+    const next = new Set(undoneKeys);
+    if (next.has('location')) {
+      next.delete('location');
+      setResume((prev) => ({
+        ...prev,
+        personal: { ...prev.personal, location: result.tailoredResume.personal.location },
+      }));
+    } else {
+      next.add('location');
+      setResume((prev) => ({
+        ...prev,
+        personal: { ...prev.personal, location: original.personal.location },
+      }));
+    }
+    setUndoneKeys(next);
+  };
+
   const handleUndoSummary = () => {
     if (!original?.summary) return;
     const next = new Set(undoneKeys);
@@ -190,7 +209,7 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
     if (original) {
       setResume(original);
       setSummaryDraft(original.summary);
-      setUndoneKeys(new Set(['title', 'summary', 'all']));
+      setUndoneKeys(new Set(['title', 'summary', 'location', 'all']));
     }
   };
 
@@ -229,8 +248,8 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
   };
 
   const p = resume.personal;
-  const contactItems: { label: string; url?: string }[] = [];
-  if (p.location) contactItems.push({ label: p.location });
+  const contactItems: { label: string; url?: string; isLocation?: boolean }[] = [];
+  if (p.location) contactItems.push({ label: p.location, isLocation: true });
   if (p.phone) contactItems.push({ label: p.phone, url: `tel:${p.phone}` });
   if (p.email) contactItems.push({ label: p.email, url: `mailto:${p.email}` });
 
@@ -464,13 +483,13 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                 <div className="a4-sheet">
                   {/* Header */}
                   <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, color: '#020617' }}>
+                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0, lineHeight: 1.25, color: '#020617' }}>
                       {p.name || 'DIVYANSH SHARMA'}
                     </h1>
 
                     {resume.title && (
-                      <div style={{ marginTop: '2px', marginBottom: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '10.8px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em' }}>
+                      <div style={{ marginTop: '4px', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '10.8px', fontWeight: 'bold', color: '#1e293b', letterSpacing: '0.01em', lineHeight: 1.3 }}>
                           {resume.title}
                         </span>
                         {original?.title && original.title !== resume.title && (
@@ -495,7 +514,19 @@ export default function TailoredResumeView({ result, originalResumeData }: Tailo
                               {item.label}
                             </a>
                           ) : (
-                            <span>{item.label}</span>
+                            <span>
+                              {item.label}
+                              {item.isLocation && original?.personal?.location && original.personal.location !== resume.personal.location && (
+                                <button
+                                  type="button"
+                                  onClick={handleUndoLocation}
+                                  style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '9px', textDecoration: 'underline', cursor: 'pointer', marginLeft: '4px' }}
+                                  title={`Revert location to ${original.personal.location}`}
+                                >
+                                  Undo
+                                </button>
+                              )}
+                            </span>
                           )}
                         </span>
                       ))}

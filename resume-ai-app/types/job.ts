@@ -10,6 +10,8 @@ export interface JobKeyword {
 export interface JobData {
   title: string;
   company?: string;
+  location?: string;
+  workMode?: 'remote' | 'on-site' | 'hybrid' | 'unspecified';
   requiredSkills: string[];
   preferredSkills: string[];
   technologies: string[];

@@ -118,6 +118,49 @@ export async function POST(req: NextRequest) {
         tailored.openSourceProjects = tailoredOs;
       }
       tailored.projects = tailoredProjects;
+
+      // 3. Reconcile ATS Location Alignment (Remote vs On-Site Target City)
+      const jdText = `${jobData.rawText || ''} ${jobData.title || ''} ${jobData.location || ''}`.toLowerCase();
+      const isRemoteJob =
+        jobData.workMode === 'remote' ||
+        (/\b(fully remote|100% remote|remote work|work from home|wfh)\b/i.test(jdText) &&
+         !/\b(on-site|onsite|hybrid|in-office)\b/i.test(jdText));
+
+      const cityMatches = [
+        { name: 'Noida', full: 'Noida, Uttar Pradesh, India', regex: /\bnoida\b/i },
+        { name: 'Gurgaon', full: 'Gurugram, Haryana, India', regex: /\b(gurgaon|gurugram)\b/i },
+        { name: 'Delhi NCR', full: 'Delhi NCR, India', regex: /\b(delhi|new delhi|ncr)\b/i },
+        { name: 'Bangalore', full: 'Bengaluru, Karnataka, India', regex: /\b(bangalore|bengaluru)\b/i },
+        { name: 'Hyderabad', full: 'Hyderabad, Telangana, India', regex: /\bhyderabad\b/i },
+        { name: 'Pune', full: 'Pune, Maharashtra, India', regex: /\bpune\b/i },
+        { name: 'Mumbai', full: 'Mumbai, Maharashtra, India', regex: /\bmumbai\b/i },
+      ];
+
+      const detectedCity = jobData.location
+        ? cityMatches.find((c) => c.regex.test(jobData.location || '')) || { name: jobData.location, full: `${jobData.location}, India`, regex: /./ }
+        : cityMatches.find((c) => c.regex.test(jdText));
+
+      if (isRemoteJob) {
+        // Keep candidate's original home location for remote roles
+        if (resumeData.personal?.location) {
+          tailored.personal.location = resumeData.personal.location;
+        }
+      } else if (detectedCity && !isRemoteJob) {
+        // For on-site/hybrid roles in a target city, align location to pass automated ATS geographical filters
+        if (!tailored.personal.location || tailored.personal.location.includes('Sambhal')) {
+          tailored.personal.location = detectedCity.full;
+          if (!tailoringResult.changes.some((c) => c.field === 'location')) {
+            tailoringResult.changes.unshift({
+              section: 'Personal Information',
+              field: 'location',
+              before: resumeData.personal.location || 'Sambhal, Uttar Pradesh, India',
+              after: detectedCity.full,
+              reason: `Aligned location to ${detectedCity.name} to clear ATS on-site screening and geography filters.`,
+              keywordsAdded: [`${detectedCity.name} on-site`],
+            });
+          }
+        }
+      }
     }
 
     return NextResponse.json(tailoringResult);

@@ -64,6 +64,16 @@ NON-NEGOTIABLE ATS OPTIMIZATION & CANDIDATE-AUTHORIZED DIRECTIVES:
    - Standard clean headings, bullet points starting with strong past-tense action verbs.
    - Ensure tailoredScore.overall is between 92 and 98, with tailoredScore.keywords and tailoredScore.skills >= 95.
 
+7. ATS LOCATION & GEOGRAPHIC MATCHING (CRITICAL FOR ON-SITE / HYBRID ROLES):
+   - Analyze the target job's location and work mode from the Job Description.
+   - If the job is strictly REMOTE (or workMode is 'remote' with no specific city requirement):
+     * Preserve the candidate's original location (e.g. "${resume.personal.location || 'Sambhal, Uttar Pradesh, India'}").
+   - If the job is ON-SITE, HYBRID, or mentions a target city / location (e.g. 'Noida', 'Bengaluru / Bangalore', 'Delhi NCR', 'Gurgaon / Gurugram', 'Hyderabad', 'Pune', 'Mumbai', etc.):
+     * ATS geographic screening filters automatically penalize or reject candidates whose location does not match the target job city.
+     * Update personal.location to match the target job city (e.g. 'Noida, Uttar Pradesh, India' or '[Target City], India').
+     * In the professional summary, state availability for on-site work in that target city (e.g. 'Available for on-site role in Noida.').
+     * Record this change in the changes array: { section: 'Personal Information', field: 'location', before: '${resume.personal.location}', after: '<new location>', reason: 'Aligned candidate location to target job city to clear ATS geographical screening filters.', keywordsAdded: ['<Target City> on-site'] }.
+
 Original Resume:
 ${JSON.stringify(resume, null, 2)}
 

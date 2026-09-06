@@ -6,7 +6,7 @@ export const sampleOriginalResume: ResumeData = {
     name: 'DIVYANSH SHARMA',
     email: 'b25bs1093@iitj.ac.in',
     phone: '+91-8077073548',
-    location: 'Sambhal, Uttar Pradesh, India (Open to Noida / Delhi NCR)',
+    location: 'Sambhal, Uttar Pradesh, India',
     linkedin: 'https://www.linkedin.com/in/divyansh-sharma-a92889340/',
     github: 'https://github.com/divyanshsharma24-git',
     portfolio: 'https://divyansh-portfolio-portfolio.vercel.app/',
@@ -261,6 +261,10 @@ export const sampleOriginalResume: ResumeData = {
 export const sampleTailoredResult: TailoringResult = {
   tailoredResume: {
     ...sampleOriginalResume,
+    personal: {
+      ...sampleOriginalResume.personal,
+      location: 'Noida, Uttar Pradesh, India',
+    },
     title: 'Fullstack Developer Intern | React.js • Python • Node.js • MySQL • REST APIs',
     summary:
       'Full Stack Developer and AI & Data Science student at IIT Jodhpur with strong hands-on experience developing responsive web applications, backend services, and relational databases. Proven track record in building and deploying production-grade platforms with React.js, TypeScript, Next.js, Node.js, Python, FastAPI, and MySQL/PostgreSQL—supporting 1,000+ users. Skilled in REST API integration, CRUD operations, debugging, authentication flows, and clean code architecture. Available for on-site role in Noida.',
@@ -316,6 +320,14 @@ export const sampleTailoredResult: TailoringResult = {
     qualifications: 95,
   },
   changes: [
+    {
+      section: 'Personal Information',
+      field: 'location',
+      before: 'Sambhal, Uttar Pradesh, India',
+      after: 'Noida, Uttar Pradesh, India',
+      reason: 'Aligned location to target job city (Noida) to pass automated ATS geographical screening filter.',
+      keywordsAdded: ['Noida on-site'],
+    },
     {
       section: 'Professional Summary',
       field: 'summary',
