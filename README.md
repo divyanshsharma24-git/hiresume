@@ -1,4 +1,4 @@
-# HiResume (ResumeAI) 🚀
+# HIREsume
 
 <div align="center">
 
@@ -24,7 +24,7 @@
 
 ---
 
-## 🌟 Visual Walkthrough & Screenshots
+##  Visual Walkthrough & Screenshots
 
 ### 1. Modern Glassmorphic Landing Page
 Upload your existing resume (`PDF` or `DOCX`), paste the target Job Description, or immediately explore with the pre-configured high-impact sample dataset.
@@ -81,7 +81,7 @@ Every single keyword injected is cross-verified against candidate coursework, pr
 
 ---
 
-## ⚡ Key Highlights & Core Capabilities
+##  Key Highlights & Core Capabilities
 
 - **Strict Anti-Fabrication Guarantee:** Zero random keyword dumping. The AI contextualizes target requirements (e.g. Next.js, FastAPI, MySQL, PyTorch, LangChain) into genuine engineering achievements with clear traceability.
 - **Exact Layout & Structure Preservation:** Locks down authentic Ivy League / Silicon Valley resume standards:
@@ -100,7 +100,7 @@ Every single keyword injected is cross-verified against candidate coursework, pr
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 | Layer | Technology |
 |---|---|
@@ -113,7 +113,7 @@ Every single keyword injected is cross-verified against candidate coursework, pr
 
 ---
 
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
 ### 1. Clone the Repository
 ```bash
@@ -152,13 +152,13 @@ npm run start
 
 ---
 
-## 🛡️ Privacy & Zero-Data Retention
+##  Privacy & Zero-Data Retention
 - **No Third-Party Database:** Uploaded resumes and parsed text are processed in memory and never stored on a persistent database.
 - **API Key Confidentiality:** All Gemini API interactions happen server-side via Next.js Route Handlers. Client browsers never receive or expose your private keys.
 
 ---
 
-## 👨‍💻 Creator & Ownership
+##  Creator & Ownership
 
 This project was ideated, designed, and engineered from scratch by:
 
@@ -174,6 +174,6 @@ This project was ideated, designed, and engineered from scratch by:
 
 ---
 
-## 📜 Open Source License
+## Open Source License
 
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, distribute, and build upon this software for academic, commercial, and personal purposes.
